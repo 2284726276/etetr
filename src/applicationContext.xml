@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 	<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN"
+		"http://www.springframework.org/dtd/spring-beans.dtd"> -->
+<beans  xmlns="http://www.springframework.org/schema/beans"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:aop="http://www.springframework.org/schema/aop"
+        xmlns:tx="http://www.springframework.org/schema/tx"
+        xsi:schemaLocation="
+   http://www.springframework.org/schema/beans
+   http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+   http://www.springframework.org/schema/tx
+   http://www.springframework.org/schema/tx/spring-tx-3.0.xsd
+   http://www.springframework.org/schema/aop
+   http://www.springframework.org/schema/aop/spring-aop-3.0.xsd"
+   default-autowire="byName" >
+	<import resource="dao.xml"/>
+	<!--定义数据源  -->
+	<bean name="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+		<property name="driverClassName" value="com.mysql.jdbc.Driver"></property>
+		<property name="url" value="jdbc:mysql://localhost:3306/yangsheng"></property>
+		<property name="username" value="root"></property>
+		<property name="password" value="123456"></property>
+	</bean>
+	<bean name="sessionFactory" class="org.springframework.orm.hibernate4.LocalSessionFactoryBean">
+		<!--1  -->
+		<property name="dataSource" ref="dataSource"></property>
+		<!--2  -->
+		<property name="hibernateProperties">
+			<props>
+				<prop key="hibernate.dialect">org.hibernate.dialect.MySQLDialect</prop>			
+				<prop key="hibernate.show_sql">true</prop>			
+				<prop key="hibernate.format_sql">true</prop>			
+				<prop key="hibernate.hbm2ddl.auto">update</prop>			
+			</props>
+		</property>
+		<!--3  -->
+		<property name="mappingResources">
+			<list>
+				<value>edu/tsinghua/entity/mapping/user.xml</value>
+				<value>edu/tsinghua/entity/mapping/article.xml</value>
+			</list>
+		</property>
+	</bean>
+	
+	<bean name="userDao" class="edu.tsinghua.dao.UserDao"/>
+	<bean name="userBiz" class="edu.tsinghua.biz.UserBiz"/>
+	<bean name="loginAct" class="edu.tsinghua.action.LoginAction"/>
+	<bean name="regAction" class="edu.tsinghua.action.RegAction"/>
+	
+	<!--文章的操作  -->
+	<bean name="articleDao" class="edu.tsinghua.dao.ArticleDao"/>
+	<bean name="articleBiz" class="edu.tsinghua.biz.ArticleBiz"/>
+	<bean name="articleAct" class="edu.tsinghua.action.ArticleAction" />
+	
+	<!--日志AOP  -->
+<!-- 	
+	<bean name="biz" class="edu.tsinghua.aop.Biz"></bean>
+	<bean name="loggerAdvice" class="edu.tsinghua.aop.LoggerAdvice"></bean>
+	<bean name="zhenghe" class="org.springframework.aop.framework.ProxyFactoryBean">
+		<property name="proxyInterfaces" value="edu.tsinghua.aop.IBiz"></property>
+		<property name="interceptorNames">
+			<list>
+				<value>loggerAdvice</value>
+			</list>
+		</property>
+		<property name="targetName" value="biz"></property>
+	</bean>
+	 -->
+		<!-- 声明式事务 -->
+	<!--定义事务管理器  -->
+	<bean id="txm" class="org.springframework.orm.hibernate4.HibernateTransactionManager">
+		<property name="sessionFactory" ref="sessionFactory"></property>
+	</bean>
+	
+	<!--定义通知  -->
+	<tx:advice id="txadvice" transaction-manager="txm">
+		<tx:attributes>
+			<tx:method name="*" propagation="REQUIRED"/>
+		</tx:attributes>
+	</tx:advice>
+	
+	<!--aop  -->
+	<aop:config>
+		<aop:pointcut expression="execution(* edu.tsinghua.dao.*.*(..))" id="fangFa"/><!--方法  -->
+		<aop:advisor advice-ref="txadvice" pointcut-ref="fangFa"/>
+	</aop:config>
+	
+	
+</beans>

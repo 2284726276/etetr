@@ -1,0 +1,12 @@
+struts2+hibernate基础上
+1.导包：spring   struts2-spring-plugin-2.3.16.3.jar
+2.web.xml中添加spring的配置
+	  <context-param>
+	  	<param-name>contextConfigLocation</param-name>
+	  	<param-value>classpath:applicationContext.xml</param-value>
+	  </context-param>
+	  <listener>
+	  	<listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+	  </listener>
+3.编辑  applicationContext.xml
+4.编辑struts.xml：修改action的class引用，完成和spring的整合

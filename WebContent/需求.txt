@@ -1,0 +1,12 @@
+用户：编号  登录名  密码  类型
+文章：编号  标题 时间  摘要  内容Article
+
+步骤：
+创建实体
+编写映射文件
+jsp页面---dao-biz-action-jsp
+
+applicationContext.xml 添加所有新建的类
+struts.xml  配置action  和spring整合
+必须封装属性
+
